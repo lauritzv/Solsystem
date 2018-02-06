@@ -10,7 +10,7 @@ namespace SpaceSim
         public string Name { get; set; }
         protected int orbitalRadius;
         protected int orbitalPeriod;
-        protected int objectRadius;
+        public int objectRadius { get; }
         protected double rotationalPeriod;
         public string objectColor { get; }
 

@@ -24,27 +24,52 @@ namespace Solsystem
     /// </summary>
     public partial class MainWindow : Window
     {
+        double largestPos = 227940000.0;
+        double sizeOfSun = 695700.0;
+
         public MainWindow()
         {
             InitializeComponent();
 
             List<SpaceObject> solarSystem = InitSolarSystem();
+            
 
 
-            for (int i = 0; i < solarSystem.Count-1; i++) {
+            for (int i = 0; i < solarSystem.Count; i++) {
                 Ellipse el;
                 el = new Ellipse();
                 el.Name = solarSystem[i].Name;
                 el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
-                el.Width = 50;
-                el.Height = 50;
+
+
+                el.Width = Scale(solarSystem[i].objectRadius, sizeOfSun, 20.0);
+                el.Height = el.Width;
+                Tuple<double, double> pos = solarSystem[i].CalculatPos(0);
+
+                double posx = Scale(pos.Item1, largestPos, 400.0) + (spaceWindow.Width/2);
+                
+                Canvas.SetTop(el, spaceWindow.Height/2 - el.Width/2);
+                Canvas.SetLeft(el, posx);
+                
+
+
 
                 spaceFrame.Children.Add(el);
+
             }
             
 
 
         }
+
+        public static double Scale(double value, double maxInputValue, double maxOutputValue)
+        {
+            if (value <= 1.0)
+                return 0.0; // log is undefined for 0, log(1) = 0
+            return maxOutputValue * Math.Log(value) / Math.Log(maxInputValue);
+        }
+    
+
         public List<SpaceObject> InitSolarSystem()
         {
             string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"SpaceObjects.txt");
