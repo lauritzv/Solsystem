@@ -26,17 +26,20 @@ namespace Solsystem
     {
         double largestPos = 227940000.0;
         double sizeOfSun = 695700.0;
+        List<SpaceObject> solarSystem;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            List<SpaceObject> solarSystem = InitSolarSystem();
+            solarSystem = InitSolarSystem();
             
 
 
             for (int i = 0; i < solarSystem.Count; i++) {
                 Ellipse el;
+                double posx = 0;
+                double posy = 0;
                 el = new Ellipse();
                 el.Name = solarSystem[i].Name;
                 el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
@@ -45,10 +48,18 @@ namespace Solsystem
                 el.Width = Scale(solarSystem[i].objectRadius, sizeOfSun, 20.0);
                 el.Height = el.Width;
                 Tuple<double, double> pos = solarSystem[i].CalculatPos(0);
-
-                double posx = Scale(pos.Item1, largestPos, 400.0) + (spaceWindow.Width/2);
+                if (el.Name == "Sun")
+                {
+                    posx = (Scale(pos.Item1, largestPos, 400.0)) + (spaceWindow.Width / 2);
+                    posy = Scale(pos.Item2, largestPos, 400.0) + (spaceWindow.Height / 2);
+                } else
+                {
+                    posx = Scale(pos.Item1, largestPos, 400.0);
+                    posy = Scale(pos.Item2, largestPos, 400.0);
+                }
                 
-                Canvas.SetTop(el, spaceWindow.Height/2 - el.Width/2);
+                
+                Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
                 
 
@@ -57,10 +68,41 @@ namespace Solsystem
                 spaceFrame.Children.Add(el);
 
             }
-            
+
+            updatePositions(0);
+
+        }
+
+
+        public void updatePositions(double time)
+        {
+            double posx = 0;
+            double posy = 0;
+            for (int i = 0; i < solarSystem.Count; i++)
+            {
+                Ellipse e = (Ellipse)VisualTreeHelper.GetChild(spaceFrame, i);
+                Tuple<double, double> newPos = solarSystem[i].CalculatPos(time);
+                if (e.Name == "Sun")
+                {
+                    posx = (Scale(newPos.Item1, largestPos, 400.0)) + (spaceWindow.Width / 2);
+                    posy = Scale(newPos.Item2, largestPos, 400.0) + (spaceWindow.Height / 2);
+                }
+                else
+                {
+                    posx = Scale(newPos.Item1, largestPos, 400.0);
+                    posy = Scale(newPos.Item2, largestPos, 400.0);
+                }
+
+
+                Canvas.SetTop(e, posy);
+                Canvas.SetLeft(e, posx);
+
+            }
 
 
         }
+
+
 
         public static double Scale(double value, double maxInputValue, double maxOutputValue)
         {
