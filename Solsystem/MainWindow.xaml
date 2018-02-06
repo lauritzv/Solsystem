@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Canvas Margin="0,0,0,0" Background="Black" Name="spaceFrame"/>
     </Grid>
 </Window>

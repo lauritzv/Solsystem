@@ -28,11 +28,24 @@ namespace Solsystem
         {
             InitializeComponent();
 
-            List<SpaceObject> solarSystem = initSolarSystem();
+            List<SpaceObject> solarSystem = InitSolarSystem();
+
+
+            for (int i = 0; i < solarSystem.Count-1; i++) {
+                Ellipse el;
+                el = new Ellipse();
+                el.Name = solarSystem[i].Name;
+                el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
+                el.Width = 50;
+                el.Height = 50;
+
+                spaceFrame.Children.Add(el);
+            }
+            
 
 
         }
-        public List<SpaceObject> initSolarSystem()
+        public List<SpaceObject> InitSolarSystem()
         {
             string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"SpaceObjects.txt");
             string[] lines = System.IO.File.ReadAllLines(path);

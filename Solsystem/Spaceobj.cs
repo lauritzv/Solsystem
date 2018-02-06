@@ -12,7 +12,7 @@ namespace SpaceSim
         protected int orbitalPeriod;
         protected int objectRadius;
         protected double rotationalPeriod;
-        protected string objectColor;
+        public string objectColor { get; }
 
         public SpaceObject Parent { get; set; }
         

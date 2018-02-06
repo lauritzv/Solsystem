@@ -1,6 +1,6 @@
 ﻿Star Sun 0 0 695700 24,47 Orange
-Planet Mercury 57910000 88 2440 59 Grey
+Planet Mercury 57910000 88 2440 59 Gray
 Planet Venus 108200000 226 6052 243 Beige
 Planet Terra 149600000 365 6371 1 Blue
-Moon TheMoon 384400 27 1737 27 Grey
+Moon TheMoon 384400 27 1737 27 Gray
 Planet Mars 227940000 687 3396 1 Red
