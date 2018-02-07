@@ -25,10 +25,13 @@ namespace Solsystem
     public partial class MainWindow : Window
     {
         //double largestPos = 227940000.0;
-        double sizeOfSun = 695700.0;
+        private double sizeOfSun = 695700.0;
         List<SpaceObject> solarSystem;
-        double origox;
-        double origoy;
+        private double origox;
+        private double origoy;
+        private double time = 0;
+        private const double MOVESPEED = 0.3;
+        private const long TIMERFREQUENCY = 20000;
 
         public MainWindow()
         {
@@ -37,9 +40,9 @@ namespace Solsystem
             solarSystem = InitSolarSystem();
             origox = spaceWindow.Width / 2;
             origoy = spaceWindow.Height / 2;
-
-
-            for (int i = 0; i < solarSystem.Count; i++) {
+            
+            for (int i = 0; i < solarSystem.Count; i++)
+            {
                 Ellipse el;
                 double posx = 0;
                 double posy = 0;
@@ -47,54 +50,52 @@ namespace Solsystem
                 el.Name = solarSystem[i].Name;
                 el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
 
-
                 el.Width = Scale(solarSystem[i].objectRadius, sizeOfSun, 20.0);
                 el.Height = el.Width;
                 Tuple<double, double> pos = solarSystem[i].CalculatPos(0);
-
+                
                 posx = origox + pos.Item1 * 50;
                 posy = origoy + pos.Item2 * 50;
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
-                
 
-
+                el.MouseDown += new MouseButtonEventHandler(el_MouseDown);
 
                 spaceFrame.Children.Add(el);
-
             }
 
-            //InitTimer();
-            updatePositions(182);
+            //updatePositions(182);
+
+            //Timer:
+            System.Windows.Threading.DispatcherTimer timer;
+            timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = new TimeSpan(TIMERFREQUENCY);
+            timer.Tick += t_Tick;
+            timer.Start();
         }
-        
-        /*
-        private void InitTimer() {
-            DispatcherTimer newTimer = new DispatcherTimer();
 
-            int timerTick = 0;
-            newTimer.Interval = TimeSpan.FromMilliseconds(100);
-            newTimer.Tick += (a, b) =>
-            {
-                updatePositions(timerTick);
-                //System.Console.WriteLine((++timerTick / 10).ToString() + " : " + (timerTick % 10).ToString());
-            };
 
+        private void t_Tick(object sender, EventArgs e)
+        {
+            IncreaseTime();
+            UpdatePositions(time);
         }
-        */
+        private void IncreaseTime() {
+            time += MOVESPEED;
+        }
 
 
-        public void updatePositions(double time)
+        private  void UpdatePositions(double t)
         {
             double posx = 0;
             double posy = 0;
             for (int i = 0; i < solarSystem.Count; i++)
             {
                 Ellipse e = (Ellipse)VisualTreeHelper.GetChild(spaceFrame, i);
-                Tuple<double, double> pos = solarSystem[i].CalculatPos(time);
+                Tuple<double, double> pos = solarSystem[i].CalculatPos(t);
 
-                posx = origox + pos.Item1 * 50;
-                posy = origoy + pos.Item2 * 50;
+                posx = origox - e.Width + pos.Item1 * 50;
+                posy = origoy - e.Height + pos.Item2 * 50;
 
                 Canvas.SetTop(e, posy);
                 Canvas.SetLeft(e, posx);
@@ -104,7 +105,14 @@ namespace Solsystem
 
         }
 
-
+        public void el_MouseDown(object sender, MouseEventArgs e)
+        {
+            Shape shape = (Shape)e.OriginalSource;
+            String name = shape.Name;
+            MessageBox.Show(name + " clicked!");
+            e.Handled = true;
+        }
+
 
         public static double Scale(double value, double maxInputValue, double maxOutputValue)
         {
@@ -112,7 +120,7 @@ namespace Solsystem
                 return 0.0; // log is undefined for 0, log(1) = 0
             return maxOutputValue * Math.Log(value) / Math.Log(maxInputValue);
         }
-    
+
 
         public List<SpaceObject> InitSolarSystem()
         {
@@ -174,4 +182,3 @@ namespace Solsystem
 
 }
 
-    
