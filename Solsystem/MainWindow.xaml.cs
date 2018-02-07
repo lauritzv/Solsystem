@@ -24,14 +24,19 @@ namespace Solsystem
     /// </summary>
     public partial class MainWindow : Window
     {
-        //double largestPos = 227940000.0;
-        private double sizeOfSun = 695700.0;
-        List<SpaceObject> solarSystem;
+        private double sizeOfSaturn = 60268;
+        private List<SpaceObject> solarSystem;
         private double origox;
         private double origoy;
         private double time = 0;
         private const double MOVESPEED = 0.3;
         private const long TIMERFREQUENCY = 20000;
+        private List<double> times = new List<double>();
+
+        //Tilfeldige startposisjoner?
+        private const bool RANDOMSTARTPOS = true;
+
+
 
         public MainWindow()
         {
@@ -40,7 +45,9 @@ namespace Solsystem
             solarSystem = InitSolarSystem();
             origox = spaceWindow.Width / 2;
             origoy = spaceWindow.Height / 2;
-            
+
+            Random random = new Random(DateTime.Now.Second);
+
             for (int i = 0; i < solarSystem.Count; i++)
             {
                 Ellipse el;
@@ -50,12 +57,30 @@ namespace Solsystem
                 el.Name = solarSystem[i].Name;
                 el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
 
-                el.Width = Scale(solarSystem[i].objectRadius, sizeOfSun, 20.0);
+                if (el.Name.Contains("Sun"))
+                    el.Width = 3*Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
+                else
+                    el.Width = Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
                 el.Height = el.Width;
-                Tuple<double, double> pos = solarSystem[i].CalculatPos(0);
-                
-                posx = origox + pos.Item1 * 50;
-                posy = origoy + pos.Item2 * 50;
+
+
+                Tuple<double, double> pos;
+
+                if (RANDOMSTARTPOS)
+                {
+                    times.Add(Math.Pow(random.NextDouble() * 365.0,3));
+                    pos = solarSystem[i].CalculatPos(times[i]);
+                    if (el.Name.Contains("Moon") || el.Name == "Luna")
+                    {
+                        int earthIndex = solarSystem.IndexOf(solarSystem[i].Parent);
+                        times[i] = times[earthIndex];
+                    }
+                }
+                else
+                    pos = solarSystem[i].CalculatPos(time);
+
+                posx = origox + pos.Item1 * 100 - el.Width*0.5;
+                posy = origoy + pos.Item2 * 100 - el.Height*0.5;
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
 
@@ -63,13 +88,13 @@ namespace Solsystem
 
                 spaceFrame.Children.Add(el);
             }
-
-            //updatePositions(182);
-
+            
             //Timer:
-            System.Windows.Threading.DispatcherTimer timer;
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = new TimeSpan(TIMERFREQUENCY);
+            DispatcherTimer timer;
+            timer = new DispatcherTimer
+            {
+                Interval = new TimeSpan(TIMERFREQUENCY)
+            };
             timer.Tick += t_Tick;
             timer.Start();
         }
@@ -77,32 +102,41 @@ namespace Solsystem
 
         private void t_Tick(object sender, EventArgs e)
         {
-            IncreaseTime();
-            UpdatePositions(time);
-        }
-        private void IncreaseTime() {
-            time += MOVESPEED;
+            if (RANDOMSTARTPOS)
+            {
+                for (int i = 0; i < times.Count; i++)
+                {
+                    times[i] += MOVESPEED;
+                }
+            }
+            else
+                time += MOVESPEED;
+            
+
+            UpdatePositions();
         }
 
 
-        private  void UpdatePositions(double t)
+        private  void UpdatePositions()
         {
             double posx = 0;
             double posy = 0;
             for (int i = 0; i < solarSystem.Count; i++)
             {
                 Ellipse e = (Ellipse)VisualTreeHelper.GetChild(spaceFrame, i);
-                Tuple<double, double> pos = solarSystem[i].CalculatPos(t);
+                Tuple<double, double> pos;
+                if (RANDOMSTARTPOS)
+                    pos = solarSystem[i].CalculatPos(times[i]);
+                else
+                    pos = solarSystem[i].CalculatPos(time);
 
-                posx = origox - e.Width + pos.Item1 * 50;
-                posy = origoy - e.Height + pos.Item2 * 50;
+                posx = origox - e.Width*0.5 + pos.Item1 * 100;
+                posy = origoy - e.Height*0.5 + pos.Item2 * 100;
 
                 Canvas.SetTop(e, posy);
                 Canvas.SetLeft(e, posx);
-
             }
-
-
+            
         }
 
         public void el_MouseDown(object sender, MouseEventArgs e)
@@ -112,15 +146,12 @@ namespace Solsystem
             MessageBox.Show(name + " clicked!");
             e.Handled = true;
         }
-
-
         public static double Scale(double value, double maxInputValue, double maxOutputValue)
         {
             if (value <= 1.0)
                 return 0.0; // log is undefined for 0, log(1) = 0
             return maxOutputValue * Math.Log(value) / Math.Log(maxInputValue);
         }
-
 
         public List<SpaceObject> InitSolarSystem()
         {
@@ -152,22 +183,29 @@ namespace Solsystem
                     case "Moon":
                         solarSystem.Add(new Moon(name, orbRad, orbPeriod, objRad, rotPeriod, color));
                         break;
-
                 }
 
             }
-
+            
+            //Set parent objects:
             foreach (SpaceObject obj in solarSystem)
             {
-                switch (obj.Name)
+                switch (obj.Name.ToLower())
                 {
-                    case "Sun":
+                    case "sun":
                         break;
-                    case "TheMoon":
-                        obj.Parent = solarSystem[3];
+
+                    case "themoon":                     // proceed to case of "Luna"
+                    case "luna":                        // luna orbits around terra/earth
+                        SpaceObject earth = solarSystem.First( x => x.Name.ToLower() == "terra" || x.Name.ToLower().Contains("earth") );
+                        if (earth != null)
+                            obj.Parent = earth;
                         break;
-                    default:
-                        obj.Parent = solarSystem[0];
+
+                    default:                            //orbit around sun
+                        SpaceObject sun = solarSystem.First(x => x.Name.ToLower() == "sun");
+                        if (sun != null)
+                            obj.Parent = sun;
                         break;
                 }
 
