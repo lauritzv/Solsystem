@@ -8,7 +8,7 @@ namespace SpaceSim
     public class SpaceObject
     {
         public string Name { get; set; }
-        protected int orbitalRadius;
+        protected double orbitalRadius;
         protected int orbitalPeriod;
         public int objectRadius { get; }
         protected double rotationalPeriod;
@@ -17,7 +17,7 @@ namespace SpaceSim
         public SpaceObject Parent { get; set; }
         
 
-        public SpaceObject(string name,int orbitalRadius,int orbitalPeriod,int objectRadius, double rotationalPeriod,string objectColor) 
+        public SpaceObject(string name,double orbitalRadius,int orbitalPeriod,int objectRadius, double rotationalPeriod,string objectColor) 
         {
             this.Name = name;
             this.orbitalRadius = orbitalRadius;
@@ -72,7 +72,7 @@ namespace SpaceSim
 
     public class Star : SpaceObject
     {
-        public Star(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public Star(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name,orbitalRadius,orbitalPeriod,objectRadius,rotationalPeriod,objectColor) { }
 
         public override void Draw()
@@ -85,7 +85,7 @@ namespace SpaceSim
 
     public class Planet : SpaceObject
     {
-        public Planet(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public Planet(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
 
         public override void Draw()
@@ -97,7 +97,7 @@ namespace SpaceSim
 
     public class Moon : SpaceObject
     {
-        public Moon(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public Moon(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
         public override void Draw()
         {
@@ -108,7 +108,7 @@ namespace SpaceSim
 
     public class Comet : SpaceObject
     {
-        public Comet(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public Comet(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
 
         public override void Draw()
@@ -120,7 +120,7 @@ namespace SpaceSim
 
     public class Astroid : SpaceObject
     {
-        public Astroid(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public Astroid(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
 
         public override void Draw()
@@ -132,7 +132,7 @@ namespace SpaceSim
 
     public class AsteroidBelt : SpaceObject
     {
-        public AsteroidBelt(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public AsteroidBelt(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
 
         public override void Draw()
@@ -144,7 +144,7 @@ namespace SpaceSim
 
     public class DwarfPlanet : SpaceObject
     {
-        public DwarfPlanet(string name, int orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
+        public DwarfPlanet(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
             : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
 
         public override void Draw()

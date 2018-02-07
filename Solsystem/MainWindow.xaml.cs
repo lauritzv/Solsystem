@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using SpaceSim;
 using System.Reflection;
 using System.IO;
-
+using System.Windows.Threading;
 
 namespace Solsystem
 {
@@ -24,16 +24,19 @@ namespace Solsystem
     /// </summary>
     public partial class MainWindow : Window
     {
-        double largestPos = 227940000.0;
+        //double largestPos = 227940000.0;
         double sizeOfSun = 695700.0;
         List<SpaceObject> solarSystem;
+        double origox;
+        double origoy;
 
         public MainWindow()
         {
             InitializeComponent();
 
             solarSystem = InitSolarSystem();
-            
+            origox = spaceWindow.Width / 2;
+            origoy = spaceWindow.Height / 2;
 
 
             for (int i = 0; i < solarSystem.Count; i++) {
@@ -48,17 +51,9 @@ namespace Solsystem
                 el.Width = Scale(solarSystem[i].objectRadius, sizeOfSun, 20.0);
                 el.Height = el.Width;
                 Tuple<double, double> pos = solarSystem[i].CalculatPos(0);
-                if (el.Name == "Sun")
-                {
-                    posx = (Scale(pos.Item1, largestPos, 400.0)) + (spaceWindow.Width / 2);
-                    posy = Scale(pos.Item2, largestPos, 400.0) + (spaceWindow.Height / 2);
-                } else
-                {
-                    posx = Scale(pos.Item1, largestPos, 400.0);
-                    posy = Scale(pos.Item2, largestPos, 400.0);
-                }
-                
-                
+
+                posx = origox + pos.Item1 * 50;
+                posy = origoy + pos.Item2 * 50;
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
                 
@@ -69,9 +64,24 @@ namespace Solsystem
 
             }
 
-            updatePositions(0);
+            //InitTimer();
+            updatePositions(182);
+        }
+        
+        /*
+        private void InitTimer() {
+            DispatcherTimer newTimer = new DispatcherTimer();
+
+            int timerTick = 0;
+            newTimer.Interval = TimeSpan.FromMilliseconds(100);
+            newTimer.Tick += (a, b) =>
+            {
+                updatePositions(timerTick);
+                //System.Console.WriteLine((++timerTick / 10).ToString() + " : " + (timerTick % 10).ToString());
+            };
 
         }
+        */
 
 
         public void updatePositions(double time)
@@ -81,18 +91,10 @@ namespace Solsystem
             for (int i = 0; i < solarSystem.Count; i++)
             {
                 Ellipse e = (Ellipse)VisualTreeHelper.GetChild(spaceFrame, i);
-                Tuple<double, double> newPos = solarSystem[i].CalculatPos(time);
-                if (e.Name == "Sun")
-                {
-                    posx = (Scale(newPos.Item1, largestPos, 400.0)) + (spaceWindow.Width / 2);
-                    posy = Scale(newPos.Item2, largestPos, 400.0) + (spaceWindow.Height / 2);
-                }
-                else
-                {
-                    posx = Scale(newPos.Item1, largestPos, 400.0);
-                    posy = Scale(newPos.Item2, largestPos, 400.0);
-                }
+                Tuple<double, double> pos = solarSystem[i].CalculatPos(time);
 
+                posx = origox + pos.Item1 * 50;
+                posy = origoy + pos.Item2 * 50;
 
                 Canvas.SetTop(e, posy);
                 Canvas.SetLeft(e, posx);
@@ -125,7 +127,7 @@ namespace Solsystem
             {
                 string obj = line[0];
                 string name = line[1];
-                int orbRad = Convert.ToInt32(line[2]);
+                double orbRad = Convert.ToDouble(line[2]);
                 int orbPeriod = Convert.ToInt32(line[3]);
                 int objRad = Convert.ToInt32(line[4]);
                 double rotPeriod = Convert.ToDouble(line[5]);
@@ -153,7 +155,7 @@ namespace Solsystem
                 {
                     case "Sun":
                         break;
-                    case "The Moon":
+                    case "TheMoon":
                         obj.Parent = solarSystem[3];
                         break;
                     default:

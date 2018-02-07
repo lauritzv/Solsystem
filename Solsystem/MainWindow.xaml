@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Solsystem"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="900" Width="1600">
     <Grid Name="spaceGrid">
         <Canvas Margin="0,0,0,0" Background="Black" Name="spaceFrame"/>
     </Grid>
