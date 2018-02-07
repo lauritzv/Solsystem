@@ -111,8 +111,10 @@ namespace Solsystem
             String name = shape.Name;
             MessageBox.Show(name + " clicked!");
             e.Handled = true;
-        }
-
+        }
+
+
+
 
         public static double Scale(double value, double maxInputValue, double maxOutputValue)
         {
