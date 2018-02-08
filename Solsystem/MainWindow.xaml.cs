@@ -28,6 +28,7 @@ namespace Solsystem
         private List<SpaceObject> solarSystem;
         private double origox;
         private double origoy;
+        private List<Point> positions = new List<Point>();
         private double time = 0;
         private const double MOVESPEED = 0.3;
         private const long TIMERFREQUENCY = 20000;
@@ -43,8 +44,14 @@ namespace Solsystem
             InitializeComponent();
 
             solarSystem = InitSolarSystem();
-            origox = spaceWindow.Width / 2;
-            origoy = spaceWindow.Height / 2;
+            Loaded += delegate
+            {
+                origox = spaceWindow.ActualWidth / 2;
+                origoy = spaceWindow.ActualHeight / 2;
+                objectFrame.Height = spaceWindow.ActualHeight * 0.25;
+                objectFrame.Width = objectFrame.Height;
+            };
+
 
             Random random = new Random(DateTime.Now.Second);
 
@@ -81,6 +88,7 @@ namespace Solsystem
 
                 posx = origox + pos.Item1 * 100 - el.Width * 0.5;
                 posy = origoy + pos.Item2 * 100 - el.Height * 0.5;
+                positions.Add(new Point(posx, posy));
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
 
@@ -114,6 +122,7 @@ namespace Solsystem
 
 
             UpdatePositions();
+            updateBoxPositions();
         }
 
 
@@ -132,6 +141,7 @@ namespace Solsystem
 
                 posx = origox - e.Width * 0.5 + pos.Item1 * 100;
                 posy = origoy - e.Height * 0.5 + pos.Item2 * 100;
+                positions[i] = new Point(posx, posy);
 
                 Canvas.SetTop(e, posy);
                 Canvas.SetLeft(e, posx);
@@ -139,11 +149,85 @@ namespace Solsystem
 
         }
 
+        private void updateBoxPositions()
+        {
+            if (objectFrame.Children.Count > 1)
+            {
+                Shape p = (Shape)objectFrame.Children[0];
+                int parentindex = Stripletters(p.Name);
+                Point parentpos = positions[parentindex];
+                for (int i = 1; i < objectFrame.Children.Count; i++)
+                {
+                    Shape c = (Shape)objectFrame.Children[i];
+                    int index = Stripletters(c.Name);
+                    Point childpos = positions[index];
+                    double xoffset = parentpos.X - childpos.X;
+                    double yoffset = parentpos.Y - childpos.Y;
+                    Canvas.SetLeft(c, objectFrame.Width * 0.5 - c.Width * 0.5 - xoffset * 3.7);
+                    Canvas.SetTop(c, objectFrame.Height * 0.1 + p.Height * 0.5 - c.Height * 0.5 - yoffset * 1.8);
+
+                }
+            }
+        }
+
+        private int Stripletters(string s)
+        {
+            while (!Char.IsNumber(s, 0) && s.Length > 0)
+            {
+                s = s.Substring(1);
+            }
+            if (s.Length > 0)
+            {
+                return Convert.ToInt32(s);
+            } else
+            {
+                return 0;
+            }
+            
+        }
+
         public void el_MouseDown(object sender, MouseEventArgs e)
         {
+            objectFrame.Children.Clear();
             Shape shape = (Shape)e.OriginalSource;
-            String name = shape.Name;
-            MessageBox.Show(name + " clicked!");
+            int index = spaceFrame.Children.IndexOf(shape);
+            Ellipse el = new Ellipse();
+            el.Name = shape.Name + index.ToString();
+            el.Fill = shape.Fill;
+            el.Height = objectFrame.Height * 0.3;
+            el.Width = el.Height;
+            Canvas.SetTop(el, objectFrame.Height * 0.1);
+            Canvas.SetLeft(el, objectFrame.Width * 0.5 - (el.Width * 0.5));
+            objectFrame.Children.Add(el);
+            SpaceObject spOb = solarSystem[index];
+            List<SpaceObject> children = new List<SpaceObject>();
+            if (spOb.Name != "Sun")
+            {
+                for (int i = 0; i < solarSystem.Count; i++)
+                {
+                    if (solarSystem[i].Parent == spOb)
+                    {
+                        children.Add(solarSystem[i]);
+                    }
+                }
+                if (children.Count != 0)
+                {
+                    for (int j = 0; j < children.Count; j++)
+                    {
+                        Ellipse child = new Ellipse();
+                        int ind = solarSystem.IndexOf(children[j]);
+                        Ellipse temp = (Ellipse)spaceFrame.Children[ind];
+                        child.Fill = temp.Fill;
+                        child.Height = objectFrame.Height * 0.06;
+                        child.Width = child.Height;
+                        child.Name = temp.Name + ind;
+                        objectFrame.Children.Add(child);
+                    }
+                    
+
+                }
+            }
+
             e.Handled = true;
         }
 
