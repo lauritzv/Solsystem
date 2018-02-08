@@ -96,8 +96,8 @@ namespace Solsystem
                 spaceFrame.Children.Add(el);
 
                 Ellipse orbit = new Ellipse();
-                orbit.Height = 2 * solarSystem[i].orbitalRadius * 100;
-                orbit.Width = orbit.Height;
+                orbit.Height = 2 * solarSystem[i].orbitalRadius * 85;
+                orbit.Width = orbit.Height / 85 * 160;
                 Canvas.SetLeft(orbit, origox - orbit.Width * 0.5);
                 Canvas.SetTop(orbit, origoy - orbit.Height * 0.5);
                 orbit.Stroke = Brushes.White;
