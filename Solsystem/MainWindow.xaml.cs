@@ -50,7 +50,7 @@ namespace Solsystem
                 origoy = spaceWindow.ActualHeight / 2;
                 objectFrame.Height = spaceWindow.ActualHeight * 0.25;
                 objectFrame.Width = objectFrame.Height;
-            };
+            
 
 
             Random random = new Random(DateTime.Now.Second);
@@ -70,8 +70,7 @@ namespace Solsystem
                     el.Width = Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
                 el.Height = el.Width;
 
-
-                Tuple<double, double> pos;
+                Tuple<double, double> pos = solarSystem[i].CalculatPos(time);
 
                 if (RANDOMSTARTPOS)
                 {
@@ -83,8 +82,6 @@ namespace Solsystem
                         times[i] = times[earthIndex];
                     }
                 }
-                else
-                    pos = solarSystem[i].CalculatPos(time);
 
                 posx = origox + pos.Item1 * 100 - el.Width * 0.5;
                 posy = origoy + pos.Item2 * 100 - el.Height * 0.5;
@@ -94,8 +91,20 @@ namespace Solsystem
 
                 el.MouseDown += new MouseButtonEventHandler(el_MouseDown);
 
+                
+
                 spaceFrame.Children.Add(el);
+
+                Ellipse orbit = new Ellipse();
+                orbit.Height = 2 * solarSystem[i].orbitalRadius * 100;
+                orbit.Width = orbit.Height;
+                Canvas.SetLeft(orbit, origox - orbit.Width * 0.5);
+                Canvas.SetTop(orbit, origoy - orbit.Height * 0.5);
+                orbit.Stroke = Brushes.White;
+                orbit.StrokeThickness = 0.25;
+                orbitFrame.Children.Add(orbit);
             }
+            };
 
             //Timer:
             DispatcherTimer timer;

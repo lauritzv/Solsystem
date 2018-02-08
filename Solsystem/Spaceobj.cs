@@ -8,7 +8,7 @@ namespace SpaceSim
     public class SpaceObject
     {
         public string Name { get; set; }
-        protected double orbitalRadius;
+        public double orbitalRadius { get; }
         protected int orbitalPeriod;
         public int objectRadius { get; }
         protected double rotationalPeriod;
