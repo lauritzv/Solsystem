@@ -83,8 +83,8 @@ namespace Solsystem
                     }
                 }
 
-                posx = origox + pos.Item1 * 100 - el.Width * 0.5;
-                posy = origoy + pos.Item2 * 100 - el.Height * 0.5;
+                posx = origox + pos.Item1 * 160 - el.Width * 0.5;
+                posy = origoy + pos.Item2 * 85 - el.Height * 0.5;
                 positions.Add(new Point(posx, posy));
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
@@ -148,8 +148,8 @@ namespace Solsystem
                 else
                     pos = solarSystem[i].CalculatPos(time);
 
-                posx = origox - e.Width * 0.5 + pos.Item1 * 100;
-                posy = origoy - e.Height * 0.5 + pos.Item2 * 100;
+                posx = origox - e.Width * 0.5 + pos.Item1 * 160;
+                posy = origoy - e.Height * 0.5 + pos.Item2 * 85;
                 positions[i] = new Point(posx, posy);
 
                 Canvas.SetTop(e, posy);
@@ -172,8 +172,8 @@ namespace Solsystem
                     Point childpos = positions[index];
                     double xoffset = parentpos.X - childpos.X;
                     double yoffset = parentpos.Y - childpos.Y;
-                    Canvas.SetLeft(c, objectFrame.Width * 0.5 - c.Width * 0.5 - xoffset * 3.7);
-                    Canvas.SetTop(c, objectFrame.Height * 0.1 + p.Height * 0.5 - c.Height * 0.5 - yoffset * 1.8);
+                    Canvas.SetLeft(c, objectFrame.Width * 0.5 - c.Width * 0.5 - xoffset * 2.1);
+                    Canvas.SetTop(c, objectFrame.Height * 0.1 + p.Height * 0.5 - c.Height * 0.5 - yoffset * 2.8);
 
                 }
             }
