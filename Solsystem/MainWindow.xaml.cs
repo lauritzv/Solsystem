@@ -89,9 +89,9 @@ namespace Solsystem
                 Canvas.SetTop(el, posy);
                 Canvas.SetLeft(el, posx);
 
-                el.MouseDown += new MouseButtonEventHandler(el_MouseDown);
+                el.MouseLeftButtonDown += new MouseButtonEventHandler(el_MouseLeftButtonDown);
 
-                
+                spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
 
                 spaceFrame.Children.Add(el);
 
@@ -195,8 +195,16 @@ namespace Solsystem
             
         }
 
-        public void el_MouseDown(object sender, MouseEventArgs e)
+        public void spaceWindow_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            objectFrame.Children.Clear();
+            objectFrame.Visibility = Visibility.Collapsed;
+        }
+
+
+        public void el_MouseLeftButtonDown(object sender, MouseEventArgs e)
+        {
+            objectFrame.Visibility = Visibility.Visible;
             objectFrame.Children.Clear();
             Shape shape = (Shape)e.OriginalSource;
             int index = spaceFrame.Children.IndexOf(shape);

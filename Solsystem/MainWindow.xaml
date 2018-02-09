@@ -11,7 +11,7 @@
     <Grid Name="spaceGrid" Background="Black">
         <Canvas Margin="0,0,0,0" Name="orbitFrame" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Canvas Margin="0,0,0,0" Name="spaceFrame"/>
-        <Canvas Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="DarkSlateBlue" Name="objectFrame">
+        <Canvas Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed"  Background="DarkSlateBlue" Name="objectFrame">
         </Canvas>
         
         
