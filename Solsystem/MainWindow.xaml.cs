@@ -37,7 +37,7 @@ namespace Solsystem
         //Tilfeldige startposisjoner?
         private const bool RANDOMSTARTPOS = true;
 
-
+        private Random random = new Random(DateTime.Now.Second);
 
         public MainWindow()
         {
@@ -51,60 +51,16 @@ namespace Solsystem
                 objectFrame.Height = spaceWindow.ActualHeight * 0.25;
                 objectFrame.Width = objectFrame.Height;
             
-
-
-            Random random = new Random(DateTime.Now.Second);
-
-            for (int i = 0; i < solarSystem.Count; i++)
-            {
-                Ellipse el;
-                double posx = 0;
-                double posy = 0;
-                el = new Ellipse();
-                el.Name = solarSystem[i].Name;
-                el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
-
-                if (el.Name.Contains("Sun"))
-                    el.Width = 3 * Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
-                else
-                    el.Width = Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
-                el.Height = el.Width;
-
-                Tuple<double, double> pos = solarSystem[i].CalculatPos(time);
-
-                if (RANDOMSTARTPOS)
+                for (int i = 0; i < solarSystem.Count; i++)
                 {
-                    times.Add(Math.Pow(random.NextDouble() * 365.0, 3));
-                    pos = solarSystem[i].CalculatPos(times[i]);
-                    if (el.Name.Contains("Moon") || el.Name == "Luna")
-                    {
-                        int earthIndex = solarSystem.IndexOf(solarSystem[i].Parent);
-                        times[i] = times[earthIndex];
-                    }
-                }
-
-                posx = origox + pos.Item1 * 160 - el.Width * 0.5;
-                posy = origoy + pos.Item2 * 85 - el.Height * 0.5;
-                positions.Add(new Point(posx, posy));
-                Canvas.SetTop(el, posy);
-                Canvas.SetLeft(el, posx);
-
-                el.MouseLeftButtonDown += new MouseButtonEventHandler(el_MouseLeftButtonDown);
-
-                spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
-
-                spaceFrame.Children.Add(el);
-
-                Ellipse orbit = new Ellipse();
-                orbit.Height = 2 * solarSystem[i].orbitalRadius * 85;
-                orbit.Width = orbit.Height / 85 * 160;
-                Canvas.SetLeft(orbit, origox - orbit.Width * 0.5);
-                Canvas.SetTop(orbit, origoy - orbit.Height * 0.5);
-                orbit.Stroke = Brushes.White;
-                orbit.StrokeThickness = 0.25;
-                orbitFrame.Children.Add(orbit);
-            }
+                    Ellipse el = CreateOverviewEllipse(i);
+                    spaceFrame.Children.Add(el);
+                    Ellipse orbit = CreateOverviewOrbit(i);
+                    orbitFrame.Children.Add(orbit);
+                } 
             };
+
+            spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
 
             //Timer:
             DispatcherTimer timer;
@@ -116,6 +72,58 @@ namespace Solsystem
             timer.Start();
         }
 
+        //oppretter planet, måne eller stjerne grafikken som skal tegnes i oversiktsbildet
+        private Ellipse CreateOverviewEllipse(int i)
+        {
+            double posx = 0;
+            double posy = 0;
+
+            Ellipse el = new Ellipse();
+            el.Name = solarSystem[i].Name;
+            el.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(solarSystem[i].objectColor));
+
+            if (el.Name.Contains("Sun"))
+                el.Width = 3 * Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
+            else
+                el.Width = Scale(solarSystem[i].objectRadius, sizeOfSaturn, 35.0);
+            el.Height = el.Width;
+
+            Tuple<double, double> pos = solarSystem[i].CalculatPos(time);
+
+            if (RANDOMSTARTPOS)
+            {
+                times.Add(Math.Pow(random.NextDouble() * 365.0, 3));
+                pos = solarSystem[i].CalculatPos(times[i]);
+                if (el.Name.Contains("Moon") || el.Name == "Luna")
+                {
+                    int earthIndex = solarSystem.IndexOf(solarSystem[i].Parent);
+                    times[i] = times[earthIndex];
+                }
+            }
+
+            posx = origox + pos.Item1 * 160 - el.Width * 0.5;
+            posy = origoy + pos.Item2 * 85 - el.Height * 0.5;
+            positions.Add(new Point(posx, posy));
+            Canvas.SetTop(el, posy);
+            Canvas.SetLeft(el, posx);
+
+            el.MouseLeftButtonDown += new MouseButtonEventHandler(el_MouseLeftButtonDown);
+
+            return el;
+        }
+
+        //oppretter grafikken til banen som skal tegnes i oversiktsbildet
+        private Ellipse CreateOverviewOrbit(int i)
+        {
+            Ellipse orbit = new Ellipse();
+            orbit.Height = 2 * solarSystem[i].orbitalRadius * 85;
+            orbit.Width = orbit.Height / 85 * 160;
+            Canvas.SetLeft(orbit, origox - orbit.Width * 0.5);
+            Canvas.SetTop(orbit, origoy - orbit.Height * 0.5);
+            orbit.Stroke = Brushes.White;
+            orbit.StrokeThickness = 0.25;
+            return orbit;
+        }
 
         private void t_Tick(object sender, EventArgs e)
         {
@@ -133,7 +141,6 @@ namespace Solsystem
             UpdatePositions();
             updateBoxPositions();
         }
-
 
         private void UpdatePositions()
         {
@@ -158,6 +165,7 @@ namespace Solsystem
 
         }
 
+        // oppdaterer posisjonene til evt. måner i infoboksen 
         private void updateBoxPositions()
         {
             if (objectFrame.Children.Count > 1)
@@ -179,6 +187,7 @@ namespace Solsystem
             }
         }
 
+        // fjerner foregående bokstaver og returnerer den resterende int verdien fra en streng "abcabc123" -> 123
         private int Stripletters(string s)
         {
             while (!Char.IsNumber(s, 0) && s.Length > 0)
@@ -192,7 +201,6 @@ namespace Solsystem
             {
                 return 0;
             }
-            
         }
 
         public void spaceWindow_MouseRightButtonDown(object sender, MouseEventArgs e)
@@ -206,8 +214,17 @@ namespace Solsystem
         {
             objectFrame.Visibility = Visibility.Visible;
             objectFrame.Children.Clear();
+
             Shape shape = (Shape)e.OriginalSource;
             int index = spaceFrame.Children.IndexOf(shape);
+            AddShapeToObjectFrame(shape, index);
+            AddChildrenToObjectFrame(solarSystem[index]);
+
+            e.Handled = true;
+        }
+
+        private void AddShapeToObjectFrame(Shape shape, int index)
+        {
             Ellipse el = new Ellipse();
             el.Name = shape.Name + index.ToString();
             el.Fill = shape.Fill;
@@ -216,7 +233,10 @@ namespace Solsystem
             Canvas.SetTop(el, objectFrame.Height * 0.1);
             Canvas.SetLeft(el, objectFrame.Width * 0.5 - (el.Width * 0.5));
             objectFrame.Children.Add(el);
-            SpaceObject spOb = solarSystem[index];
+        }
+
+        private void AddChildrenToObjectFrame(SpaceObject spOb)
+        {
             List<SpaceObject> children = new List<SpaceObject>();
             if (spOb.Name != "Sun")
             {
@@ -240,38 +260,34 @@ namespace Solsystem
                         child.Name = temp.Name + ind;
                         objectFrame.Children.Add(child);
                     }
-                    
-
                 }
             }
-
-            e.Handled = true;
         }
 
-        public static double Scale(double value, double maxInputValue, double maxOutputValue)
+        private static double Scale(double value, double maxInputValue, double maxOutputValue)
         {
             if (value <= 1.0)
                 return 0.0; // log is undefined for 0, log(1) = 0
             return maxOutputValue * Math.Log(value) / Math.Log(maxInputValue);
         }
 
-        public List<SpaceObject> InitSolarSystem()
+        private List<SpaceObject> InitSolarSystem()
         {
+            List<SpaceObject> solarSystem = new List<SpaceObject>();
+
             string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"SpaceObjects.txt");
             string[] lines = System.IO.File.ReadAllLines(path);
 
             string[][] jaggedArray = lines.Select(line => line.Split(' ').ToArray()).ToArray();
 
-            List<SpaceObject> solarSystem = new List<SpaceObject>();
-
             foreach (string[] line in jaggedArray)
             {
                 string obj = line[0];
                 string name = line[1];
-                double orbRad = Convert.ToDouble(line[2]);
+                double orbRad = ParseDouble(line[2]);
                 int orbPeriod = Convert.ToInt32(line[3]);
                 int objRad = Convert.ToInt32(line[4]);
-                double rotPeriod = Convert.ToDouble(line[5]);
+                double rotPeriod = ParseDouble(line[5]);
                 string color = line[6];
 
                 switch (obj)
@@ -304,7 +320,7 @@ namespace Solsystem
                             obj.Parent = earth;
                         break;
 
-                    default:                            //orbit around sun
+                    default:                            // orbit around sun
                         SpaceObject sun = solarSystem.First(x => x.Name.ToLower() == "sun");
                         if (sun != null)
                             obj.Parent = sun;
@@ -317,6 +333,19 @@ namespace Solsystem
             return solarSystem;
         }
 
+        private List<SpaceObject> ParseSpaceObjectsFile()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        //hjelpemetode for parsing av strenger til double uavhengig av regionale settings (punktum og komma)
+        private double ParseDouble(string s)
+        {
+            s = s.Replace(',', '.');
+            double.TryParse(s, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double value);
+            return value;
+        }
 
     }
 
