@@ -50,14 +50,14 @@ namespace Solsystem
                 origoy = spaceWindow.ActualHeight / 2;
                 objectFrame.Height = spaceWindow.ActualHeight * 0.25;
                 objectFrame.Width = objectFrame.Height;
-            
+
                 for (int i = 0; i < solarSystem.Count; i++)
                 {
                     Ellipse el = CreateOverviewEllipse(i);
                     spaceFrame.Children.Add(el);
                     Ellipse orbit = CreateOverviewOrbit(i);
                     orbitFrame.Children.Add(orbit);
-                } 
+                }
             };
 
             spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
@@ -175,14 +175,16 @@ namespace Solsystem
                 Point parentpos = positions[parentindex];
                 for (int i = 1; i < objectFrame.Children.Count; i++)
                 {
-                    Shape c = (Shape)objectFrame.Children[i];
-                    int index = Stripletters(c.Name);
-                    Point childpos = positions[index];
-                    double xoffset = parentpos.X - childpos.X;
-                    double yoffset = parentpos.Y - childpos.Y;
-                    Canvas.SetLeft(c, objectFrame.Width * 0.5 - c.Width * 0.5 - xoffset * 2.1);
-                    Canvas.SetTop(c, objectFrame.Height * 0.1 + p.Height * 0.5 - c.Height * 0.5 - yoffset * 2.8);
-
+                    if ((objectFrame.Children[i].GetType() == p.GetType()))
+                    {
+                        Shape c = (Shape)objectFrame.Children[i];
+                        int index = Stripletters(c.Name);
+                        Point childpos = positions[index];
+                        double xoffset = parentpos.X - childpos.X;
+                        double yoffset = parentpos.Y - childpos.Y;
+                        Canvas.SetLeft(c, objectFrame.Width * 0.5 - c.Width * 0.5 - xoffset * 2.1);
+                        Canvas.SetTop(c, objectFrame.Height * 0.1 + p.Height * 0.5 - c.Height * 0.5 - yoffset * 2.8);
+                    }
                 }
             }
         }
@@ -197,7 +199,8 @@ namespace Solsystem
             if (s.Length > 0)
             {
                 return Convert.ToInt32(s);
-            } else
+            }
+            else
             {
                 return 0;
             }
@@ -220,7 +223,25 @@ namespace Solsystem
             AddShapeToObjectFrame(shape, index);
             AddChildrenToObjectFrame(solarSystem[index]);
 
+            AddDataText(solarSystem[index]);
+
+            
+         
             e.Handled = true;
+        }
+
+        private void AddDataText(SpaceObject target)
+        {
+            TextBlock name = new TextBlock();
+            name.Text = target.GetType().ToString().Substring(9) + ": " + target.Name;
+            name.Text += "\nOrbit radius: " + target.orbitalRadius;
+            name.Text += "\nOrbit period: " + target.orbitalPeriod;
+            name.Text += "\nObject radius: " + target.objectRadius;
+            name.Text += "\nRotational period: " + target.rotationalPeriod;
+            name.Margin = new Thickness(5, objectFrame.Height * 0.55, 0, 0);
+            name.Foreground = Brushes.White;
+
+            objectFrame.Children.Add(name);
         }
 
         private void AddShapeToObjectFrame(Shape shape, int index)
