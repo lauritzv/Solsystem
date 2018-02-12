@@ -118,10 +118,10 @@ namespace Solsystem
             {
                 times.Add(Math.Pow(random.NextDouble() * 365.0, 3));
                 pos = solarSystem[i].CalculatPos(times[i]);
-                if (el.Name.Contains("Moon") || el.Name == "Luna")
+                if ( solarSystem[i].GetType() == typeof(Moon) )
                 {
-                    int earthIndex = solarSystem.IndexOf(solarSystem[i].Parent);
-                    times[i] = times[earthIndex];
+                    int parentIndex = solarSystem.IndexOf(solarSystem[i].Parent);
+                    times[i] = times[parentIndex];
                 }
             }
 
@@ -366,40 +366,22 @@ namespace Solsystem
                     case "Star":
                         solarSystem.Add(new Star(name, orbRad, orbPeriod, objRad, rotPeriod, color));
                         break;
-                    case "Planet":
-                        solarSystem.Add(new Planet(name, orbRad, orbPeriod, objRad, rotPeriod, color));
-                        break;
                     case "Moon":
-                        solarSystem.Add(new Moon(name, orbRad, orbPeriod, objRad, rotPeriod, color));
+                        try
+                        {
+                            SpaceObject parent = solarSystem.First(x => x.Name.ToLower() == line[7].ToLower());
+                            solarSystem.Add(new Moon(name, orbRad, orbPeriod, objRad, rotPeriod, color, parent));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Feil oppstod med parenting av måne. Har månen et gyldig 8ende argument?");
+                        }
+                        break;
+                    default:
+                        solarSystem.Add(new Planet(name, orbRad, orbPeriod, objRad, rotPeriod, color, solarSystem.First(x => x.Name.ToLower() == "sun")));
                         break;
                 }
-
             }
-
-            //Set parent objects:
-            foreach (SpaceObject obj in solarSystem)
-            {
-                switch (obj.Name.ToLower())
-                {
-                    case "sun":
-                        break;
-
-                    case "themoon":                     // proceed to case of "Luna"
-                    case "luna":                        // luna orbits around terra/earth
-                        SpaceObject earth = solarSystem.First(x => x.Name.ToLower() == "terra" || x.Name.ToLower().Contains("earth"));
-                        if (earth != null)
-                            obj.Parent = earth;
-                        break;
-
-                    default:                            // orbit around sun
-                        SpaceObject sun = solarSystem.First(x => x.Name.ToLower() == "sun");
-                        if (sun != null)
-                            obj.Parent = sun;
-                        break;
-                }
-
-            }
-
 
             return solarSystem;
         }

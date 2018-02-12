@@ -85,8 +85,8 @@ namespace SpaceSim
 
     public class Planet : SpaceObject
     {
-        public Planet(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
-            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
+        public Planet(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor, SpaceObject parent)
+            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { Parent = parent; }
 
         public override void Draw()
         {
@@ -97,8 +97,8 @@ namespace SpaceSim
 
     public class Moon : SpaceObject
     {
-        public Moon(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
-            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
+        public Moon(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor, SpaceObject parent)
+            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { Parent = parent; }
         public override void Draw()
         {
             Console.Write("Moon : ");
@@ -120,8 +120,8 @@ namespace SpaceSim
 
     public class Astroid : SpaceObject
     {
-        public Astroid(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor)
-            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { }
+        public Astroid(string name, double orbitalRadius, int orbitalPeriod, int objectRadius, double rotationalPeriod, string objectColor, SpaceObject parent)
+            : base(name, orbitalRadius, orbitalPeriod, objectRadius, rotationalPeriod, objectColor) { Parent = parent; }
 
         public override void Draw()
         {
