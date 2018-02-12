@@ -278,6 +278,8 @@ namespace Solsystem
                 name.Text += "\nOrbit period: " + target.orbitalPeriod + dayOrDays(target.orbitalPeriod);
             name.Text += "\nObject radius: " + target.objectRadius + " km";
             name.Text += "\nRotational period: " + target.rotationalPeriod + dayOrDays(target.rotationalPeriod);
+            if (target.Parent != null)
+                name.Text += "\nOrbits around " + target.Parent.Name;
             name.Margin = new Thickness(5, objectFrame.Height * 0.55, 0, 0);
             name.Foreground = Brushes.White;
 
