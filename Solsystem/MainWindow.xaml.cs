@@ -57,8 +57,10 @@ namespace Solsystem
                     spaceFrame.Children.Add(el);
                     Ellipse orbit = CreateOverviewOrbit(i);
                     orbitFrame.Children.Add(orbit);
+                    Label tl = CreateOverviewTextlabel(i);
+                    labelFrame.Children.Add(tl);
                 } 
-            };
+            
 
             spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
 
@@ -70,6 +72,28 @@ namespace Solsystem
             };
             timer.Tick += t_Tick;
             timer.Start();
+            };
+        }
+
+        private Label CreateOverviewTextlabel(int index)
+        {
+            Label tl = new Label()
+            {
+                Content = solarSystem[index].Name,
+                Foreground = Brushes.White
+            };
+            return tl;
+        }
+
+        private void UpdateLabelPositions()
+        {
+            for (int i = 0; i< labelFrame.Children.Count; i++)
+            {
+                Shape item = (Shape)spaceFrame.Children[i];
+
+                Canvas.SetLeft(labelFrame.Children[i], positions[i].X + item.Width);
+                Canvas.SetTop(labelFrame.Children[i], positions[i].Y);
+            }
         }
 
         //oppretter planet, måne eller stjerne grafikken som skal tegnes i oversiktsbildet
@@ -125,6 +149,19 @@ namespace Solsystem
             return orbit;
         }
 
+        private void ToggleOrbits()
+        {
+            if (orbitFrame.Visibility == Visibility.Collapsed)
+                orbitFrame.Visibility = Visibility.Visible;
+            else orbitFrame.Visibility = Visibility.Collapsed;
+        }
+        private void ToggleLabels()
+        {
+            if (labelFrame.Visibility == Visibility.Collapsed)
+                labelFrame.Visibility = Visibility.Visible;
+            else labelFrame.Visibility = Visibility.Collapsed;
+        }
+
         private void t_Tick(object sender, EventArgs e)
         {
             if (RANDOMSTARTPOS)
@@ -139,6 +176,7 @@ namespace Solsystem
 
 
             UpdatePositions();
+            UpdateLabelPositions();
             updateBoxPositions();
         }
 
@@ -219,7 +257,6 @@ namespace Solsystem
             int index = spaceFrame.Children.IndexOf(shape);
             AddShapeToObjectFrame(shape, index);
             AddChildrenToObjectFrame(solarSystem[index]);
-
             e.Handled = true;
         }
 
