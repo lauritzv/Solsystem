@@ -213,7 +213,7 @@ namespace Solsystem
                 Point parentpos = positions[parentindex];
                 for (int i = 1; i < objectFrame.Children.Count; i++)
                 {
-                    if ((objectFrame.Children[i].GetType() == p.GetType()))
+                    if ((objectFrame.Children[i].GetType() == typeof(Ellipse)))
                     {
                         Shape c = (Shape)objectFrame.Children[i];
                         int index = Stripletters(c.Name);
@@ -272,14 +272,26 @@ namespace Solsystem
         {
             TextBlock name = new TextBlock();
             name.Text = target.GetType().ToString().Substring(9) + ": " + target.Name;
-            name.Text += "\nOrbit radius: " + target.orbitalRadius;
-            name.Text += "\nOrbit period: " + target.orbitalPeriod;
-            name.Text += "\nObject radius: " + target.objectRadius;
-            name.Text += "\nRotational period: " + target.rotationalPeriod;
+            if (target.orbitalRadius != 0)
+                name.Text += "\nOrbit radius: " + target.orbitalRadius;
+            if (target.orbitalPeriod != 0)
+                name.Text += "\nOrbit period: " + target.orbitalPeriod + dayOrDays(target.orbitalPeriod);
+            name.Text += "\nObject radius: " + target.objectRadius + " km";
+            name.Text += "\nRotational period: " + target.rotationalPeriod + dayOrDays(target.rotationalPeriod);
             name.Margin = new Thickness(5, objectFrame.Height * 0.55, 0, 0);
             name.Foreground = Brushes.White;
 
             objectFrame.Children.Add(name);
+        }
+
+        // Returnerer riktig bruk av flertall eller entall for utskrift som gjelder dager
+        private string dayOrDays(double n)
+        {
+            if (n == 1)
+                return " day";
+            else
+                return " days";
+
         }
 
         private void AddShapeToObjectFrame(Shape shape, int index)
