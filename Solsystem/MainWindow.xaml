@@ -11,7 +11,9 @@
     <Grid Name="spaceGrid" Background="Black">
         <Canvas Margin="0,0,0,0" Name="orbitFrame" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Canvas Margin="0,0,0,0" Name="spaceFrame"/>
-        <Canvas Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed"  Background="DarkSlateBlue" Name="objectFrame"/>
+        <Canvas Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed"  Background="#FF222222" Name="objectFrame"/>
         <Canvas Margin="0,0,0,0" Name="labelFrame" Visibility="Visible"/>
+        <Button x:Name="Toggle_Labels" Content="Toggle Labels" Grid.Column="1" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="86" Click="Labels_Click" Background="#FF222222" Foreground="White"/>
+        <Button x:Name="Toggle_Orbits" Content="Toggle Orbits" Grid.Column="1" HorizontalAlignment="Right" Margin="0,36,10,0" VerticalAlignment="Top" Width="86" Click="Orbits_Click" Background="#FF222222" Foreground="White"/>
     </Grid>
 </Window>

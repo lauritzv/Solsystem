@@ -149,13 +149,13 @@ namespace Solsystem
             return orbit;
         }
 
-        private void ToggleOrbits()
+        private void Orbits_Click(object sender, RoutedEventArgs e)
         {
             if (orbitFrame.Visibility == Visibility.Collapsed)
                 orbitFrame.Visibility = Visibility.Visible;
             else orbitFrame.Visibility = Visibility.Collapsed;
         }
-        private void ToggleLabels()
+        private void Labels_Click(object sender, RoutedEventArgs e)
         {
             if (labelFrame.Visibility == Visibility.Collapsed)
                 labelFrame.Visibility = Visibility.Visible;
