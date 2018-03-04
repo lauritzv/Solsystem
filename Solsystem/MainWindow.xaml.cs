@@ -1,27 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SpaceSim;
 using System.Reflection;
-using System.IO;
 using System.Windows.Threading;
 
 namespace Solsystem
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         private double sizeOfSaturn = 60268;
@@ -60,7 +51,6 @@ namespace Solsystem
                     Label tl = CreateOverviewTextlabel(i);
                     labelFrame.Children.Add(tl);
                 } 
-            
 
             spaceWindow.MouseRightButtonDown += new MouseButtonEventHandler(spaceWindow_MouseRightButtonDown);
 
@@ -167,13 +157,9 @@ namespace Solsystem
             if (RANDOMSTARTPOS)
             {
                 for (int i = 0; i < times.Count; i++)
-                {
                     times[i] += MOVESPEED;
-                }
             }
-            else
-                time += MOVESPEED;
-
+            else time += MOVESPEED;
 
             UpdatePositions();
             UpdateLabelPositions();
@@ -200,7 +186,6 @@ namespace Solsystem
                 Canvas.SetTop(e, posy);
                 Canvas.SetLeft(e, posx);
             }
-
         }
 
         // oppdaterer posisjonene til evt. måner i infoboksen 
@@ -231,17 +216,12 @@ namespace Solsystem
         private int Stripletters(string s)
         {
             while (!Char.IsNumber(s, 0) && s.Length > 0)
-            {
                 s = s.Substring(1);
-            }
+            
             if (s.Length > 0)
-            {
                 return Convert.ToInt32(s);
-            }
-            else
-            {
-                return 0;
-            }
+            
+            else return 0;
         }
 
         public void spaceWindow_MouseRightButtonDown(object sender, MouseEventArgs e)
@@ -262,9 +242,7 @@ namespace Solsystem
             AddChildrenToObjectFrame(solarSystem[index]);
 
             AddDataText(solarSystem[index]);
-
             
-         
             e.Handled = true;
         }
 
@@ -287,15 +265,8 @@ namespace Solsystem
         }
 
         // Returnerer riktig bruk av flertall eller entall for utskrift som gjelder dager
-        private string dayOrDays(double n)
-        {
-            if (n == 1)
-                return " day";
-            else
-                return " days";
-
-        }
-
+        private Func<double, string> dayOrDays = n => (n <= 1) ? " day" : " days";
+        
         private void AddShapeToObjectFrame(Shape shape, int index)
         {
             Ellipse el = new Ellipse();
@@ -311,7 +282,7 @@ namespace Solsystem
         private void AddChildrenToObjectFrame(SpaceObject spOb)
         {
             List<SpaceObject> children = new List<SpaceObject>();
-            if (spOb.Name != "Sun")
+            if (!spOb.Name.ToLower().Equals("sun")) // hindrer at alt som orbiter solen tegnes i infoboksen
             {
                 for (int i = 0; i < solarSystem.Count; i++)
                 {
@@ -337,13 +308,7 @@ namespace Solsystem
             }
         }
 
-        private static double Scale(double value, double maxInputValue, double maxOutputValue)
-        {
-            if (value <= 1.0)
-                return 0.0; // log is undefined for 0, log(1) = 0
-            return maxOutputValue * Math.Log(value) / Math.Log(maxInputValue);
-        }
-
+        
         private List<SpaceObject> InitSolarSystem()
         {
             List<SpaceObject> solarSystem = new List<SpaceObject>();
@@ -365,10 +330,10 @@ namespace Solsystem
 
                 switch (obj)
                 {
-                    case "Star":
+                    case "Star": // stjerner får ikke parent
                         solarSystem.Add(new Star(name, orbRad, orbPeriod, objRad, rotPeriod, color));
                         break;
-                    case "Moon":
+                    case "Moon": // måne har et ekstra argument for parent
                         try
                         {
                             SpaceObject parent = solarSystem.First(x => x.Name.ToLower() == line[7].ToLower());
@@ -379,7 +344,7 @@ namespace Solsystem
                             Console.WriteLine("Feil oppstod med parenting av måne. Har månen et gyldig 8ende argument?");
                         }
                         break;
-                    default:
+                    default:    // defaulter til planet med sun som parent
                         solarSystem.Add(new Planet(name, orbRad, orbPeriod, objRad, rotPeriod, color, solarSystem.First(x => x.Name.ToLower() == "sun")));
                         break;
                 }
@@ -388,19 +353,16 @@ namespace Solsystem
             return solarSystem;
         }
 
-        private List<SpaceObject> ParseSpaceObjectsFile()
-        {
-            throw new NotImplementedException();
-        }
+        //hjelpefunksjon for logaritmisk skalering. Benyttes for skalering av rom-elementene (log udefinert for 0.0. log1 = 0)
+        private Func<double, double, double, double> Scale = (value, maxInputValue, maxOutputValue) =>
+            (value <= 1.0) ? 0.0 : Math.Log(value) * maxOutputValue / Math.Log(maxInputValue);
 
-
-        //hjelpemetode for parsing av strenger til double uavhengig av regionale settings (punktum og komma)
-        private double ParseDouble(string s)
+        //hjelpefunksjon for parsing av strenger til double uavhengig av regionale settings (punktum og komma)
+        private Func<string, double> ParseDouble = s =>
         {
-            s = s.Replace(',', '.');
-            double.TryParse(s, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double value);
+            double.TryParse(s.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double value);
             return value;
-        }
+        };
 
     }
 
